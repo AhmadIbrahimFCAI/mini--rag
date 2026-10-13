@@ -4,7 +4,7 @@ python-multipart==0.0.32
 python-dotenv==1.2.4
 pydantic-settings==2.15.0
 aiofiles==25.1.0
-langchain==1.4.4
+langchain==1.4.5
 langchain-community==0.4.2
 pymupdf==1.28.2
 motor==3.7.1
@@ -18,3 +18,11 @@ alembic==1.20.0
 psycopg2==2.9.13
 pgvector==0.5.1s
 nltk==3.10.3
+
+# monitoring
+prometheus-client==0.26.0
+tarlette-exporter==0.24.0
+
+#Health checks
+fastapi-health==0.4.0
+
