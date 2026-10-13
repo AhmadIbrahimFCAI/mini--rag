@@ -10,6 +10,7 @@ from models.db_schemes import DataChunk, Asset
 from models.ChunkModel import ChunkModel
 from models.AssetModel import AssetModel
 from models.enums.AssetTypeEnum import AssetTypeEnum
+from controllers import NLPController
 
 
 logger = logging.getLogger('uvicorn.error')
@@ -96,6 +97,13 @@ async def process_endpoint(request: Request, project_id: int, process_request: P
         project_id=project_id,
     )
 
+    nlp_controller = NLPController(
+        vectordb_client=request.app.vectordb_client,
+        generation_client=request.app.generation_client,
+        embedding_client=request.app.embedding_client,
+        template_parser=request.app.template_parser,
+    )
+
     asset_model = await AssetModel.create_instance(db_client=request.app.db_client)
     project_files_ids = {}
     if process_request.file_id:
@@ -137,6 +145,11 @@ async def process_endpoint(request: Request, project_id: int, process_request: P
 
     chunk_model = await ChunkModel.create_instance(db_client=request.app.db_client,)
     if do_reset == 1:
+        # delete associated vectors collection
+        collection_name = nlp_controller.create_collection_name(project_id=project.project_id)
+        _ = await request.app.vectordb_client.delete_collection(collection_name=collection_name)
+
+        # delete associated chunks
         _ = await chunk_model.delete_chunks_by_project_id(project_id=project.project_id)
     
 
